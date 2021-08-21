@@ -52,7 +52,9 @@ void setup()
   //begin serial communication
   Serial.begin(115200);
   //display
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C); //initialize with the I2C addr 0x3C (128x64)
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)){ //initialize with the I2C addr 0x3C (128x64)
+    Serial.println("Display (SSD1306) allocation failed");
+  } 
   display.clearDisplay();
   //temperature sensor
   sensors.begin();
@@ -67,7 +69,7 @@ void loop()
   u16ADC_Raw = analogRead(DO_PIN);
   u16ADC_Voltage = uint32_t(VREF) * u16ADC_Raw / ADC_RES;
  
-  Serial.print("Temperaturet:\t" + String(u8Temperature) + "\t");
+  Serial.print("Temperature:\t" + String(u8Temperature) + "\t");
   Serial.print("ADC RAW:\t" + String(u16ADC_Raw) + "\t");
   Serial.print("ADC Voltage:\t" + String(u16ADC_Voltage) + "\t");
   Serial.println("DO:\t" + String(readDO(u16ADC_Voltage, u8Temperature)) + "\t");

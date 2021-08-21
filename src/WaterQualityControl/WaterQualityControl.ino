@@ -66,6 +66,11 @@ void setup()
   display.clearDisplay();
   //temperature sensor
   sensors.begin();
+  //pin mode setup 
+  pinMode(8, LOW);
+  pinMode(9, LOW);
+  pinMode(10, LOW);
+  pinMode(11, LOW);
   //delay time
   delay(10);
 }

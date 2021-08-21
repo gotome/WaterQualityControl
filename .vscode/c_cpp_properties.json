@@ -1,0 +1,26 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/Users/Geri/Documents/GitHub/WaterQualityControl/libraries/OneWire",                
+                "C:/Users/Geri/Documents/GitHub/WaterQualityControl/libraries/DallasTemperature",
+                "C:/Users/Geri/Documents/GitHub/WaterQualityControl/libraries/Adafruit_SSD1306", 
+                "C:/Users/Geri/Documents/GitHub/WaterQualityControl/libraries/Adafruit_GFX_Library",   
+                "C:/Users/Geri/Documents/GitHub/WaterQualityControl/libraries/Adafruit_BusIO"   
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.19041.0",
+            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64"
+        }
+    ],
+    "version": 4
+}

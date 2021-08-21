@@ -2,7 +2,6 @@
 //***************************************************************
 //                      DEFINE MACROS
 //***************************************************************
-
 // DISPLAY
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
 #define SCREEN_HEIGHT 64    // OLED display height, in pixels
@@ -15,8 +14,7 @@
  
 //Single-point calibration Mode=0
 //Two-point calibration Mode=1
-#define TWO_POINT_CALIBRATION 1
- 
+#define TWO_POINT_CALIBRATION 1 
 #define READ_TEMP (25) //Current water temperature ℃, Or temperature sensor function
  
 //Single point calibration needs to be filled CAL1_V and CAL1_T

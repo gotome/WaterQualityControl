@@ -1,8 +1,9 @@
 # WaterQualityControl
+
 Water quality control for industrial fish farming
 
-
 ## References
+
 * [Temperature Sensor Code](https://github.com/5cottyD/Projects/blob/master/WaterTempSensorDS18B20/WaterTempSensorDS18B20.ino)
 * [Temperature Sensor Video](https://www.youtube.com/watch?v=GQ5WSfNrBMk)
 * [Oxygen Meter Project Description](https://how2electronics.com/dissolved-oxygen-sensor-arduino-interfacing-tutorial/#What_is_Dissolved_Oxygen)

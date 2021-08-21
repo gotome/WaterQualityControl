@@ -25,13 +25,24 @@ const uint16_t DO_Table[41] = {
   7560, 7430, 7300, 7180, 7070, 6950, 6840, 6730, 6630, 6530, 6410
 };
 
-//global variables
+//****************************************
+//                GLOBALS
+//****************************************
 uint8_t u8Temperature;
 uint16_t u16ADC_Raw;
 uint16_t u16ADC_Voltage;
 uint16_t u16DO;
 
-//oxygen Sensor functions
+//****************************************
+//         FUNCTION DECLARATIONS
+//****************************************
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
+//****************************************
+//         FUNCTION DEFINITIONS
+//****************************************
 int16_t readDO(uint32_t voltage_mv, uint8_t temperature_c)
 {
 #if TWO_POINT_CALIBRATION == 00
@@ -43,10 +54,7 @@ int16_t readDO(uint32_t voltage_mv, uint8_t temperature_c)
 #endif
 }
 
-//temperature sensor functions
-OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature sensors(&oneWire);
-
+//setup system and bus communication
 void setup()
 {
   //begin serial communication
@@ -61,14 +69,16 @@ void setup()
   //delay time
   delay(10);
 }
- 
+
+//****************************************
+//                M A I N
+//****************************************
 void loop()
 {
   sensors.requestTemperatures(); //(uint8_t)READ_TEMP;
   u8Temperature = (uint8_t)sensors.getTempCByIndex(0);
   u16ADC_Raw = analogRead(DO_PIN);
   u16ADC_Voltage = uint32_t(VREF) * u16ADC_Raw / ADC_RES;
- 
   Serial.print("Temperature:\t" + String(u8Temperature) + "\t");
   Serial.print("ADC RAW:\t" + String(u16ADC_Raw) + "\t");
   Serial.print("ADC Voltage:\t" + String(u16ADC_Voltage) + "\t");

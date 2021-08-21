@@ -31,5 +31,4 @@
 //***************************************************************
 //                     FUNCTION PROTOTYPES
 //***************************************************************
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 int16_t readDO(uint32_t voltage_mv, uint8_t temperature_c); 

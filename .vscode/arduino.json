@@ -1,0 +1,10 @@
+{
+    "board": "arduino:avr:uno",
+    "sketch": "src\\WaterQualityControl\\WaterQualityControl.ino",
+    "port": "COM3",
+    "output": "../build",
+    "debugger": "jlink",
+    "prebuild": "./prebuild.sh",
+    "postbuild": "./postbuild.sh",
+    "intelliSenseGen": "global"
+}

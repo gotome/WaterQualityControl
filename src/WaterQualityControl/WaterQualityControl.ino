@@ -3,6 +3,7 @@
 //****************************************
 //arduino
 #include <Arduino.h>
+#include <math.h>
 //communication
 #include <SPI.h>
 #include <Wire.h>
@@ -28,7 +29,7 @@ const uint16_t DO_Table[41] = {
 //****************************************
 //                GLOBALS
 //****************************************
-uint8_t u8Temperature;
+float floatTemperature;
 uint16_t u16ADC_Raw;
 uint16_t u16ADC_Voltage;
 uint16_t u16DO;
@@ -52,6 +53,11 @@ int16_t readDO(uint32_t voltage_mv, uint8_t temperature_c)
   uint16_t V_saturation = (int16_t)((int8_t)temperature_c - CAL2_T) * ((uint16_t)CAL1_V - CAL2_V) / ((uint8_t)CAL1_T - CAL2_T) + CAL2_V;
   return (voltage_mv * DO_Table[temperature_c] / V_saturation);
 #endif
+}
+
+float floatPrecision(float n, float i)
+{
+    return floor(pow(10,i)*n)/pow(10,i);
 }
 
 //setup system and bus communication
@@ -81,13 +87,13 @@ void setup()
 void loop()
 {
   sensors.requestTemperatures(); //(uint8_t)READ_TEMP;
-  u8Temperature = (uint8_t)sensors.getTempCByIndex(0);
+  floatTemperature = floatPrecision(sensors.getTempCByIndex(0), (float)2.0) ;
   u16ADC_Raw = analogRead(DO_PIN);
   u16ADC_Voltage = uint32_t(VREF) * u16ADC_Raw / ADC_RES;
-  Serial.print("Temperature:\t" + String(u8Temperature) + "\t");
+  Serial.print("Temperature:\t" + String(floatTemperature) + "\t");
   Serial.print("ADC RAW:\t" + String(u16ADC_Raw) + "\t");
   Serial.print("ADC Voltage:\t" + String(u16ADC_Voltage) + "\t");
-  Serial.println("DO:\t" + String(readDO(u16ADC_Voltage, u8Temperature)) + "\t");
+  Serial.println("DO:\t" + String((float)(readDO(u16ADC_Voltage, floatTemperature)/(uint16_t)1000)) + "\t");
  
   display.clearDisplay();
   display.setCursor(10, 0); //oled display
@@ -98,7 +104,7 @@ void loop()
   display.setCursor(30, 20); //oled display
   display.setTextSize(2);
   display.setTextColor(WHITE);
-  display.print((readDO(u16ADC_Voltage, u8Temperature))/1000);
+  display.print((readDO(u16ADC_Voltage, (uint8_t)floatTemperature))/1000);
   display.setTextSize(1);
   display.print(" mg/L");
   display.display();

@@ -1,6 +1,8 @@
 //****************************************
 //                LIBRARYS
 //****************************************
+//general
+#include <stdlib.h>
 //arduino
 #include <Arduino.h>
 #include <math.h>
@@ -60,6 +62,40 @@ float floatPrecision(float n, float i)
     return floor(pow(10,i)*n)/pow(10,i);
 }
 
+void oledPrintOxigen(uint16_t u16ADC_Voltage, float floatTemperature) {
+    display.clearDisplay();
+    display.setCursor(10, 0);
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.print("Dissolved Oxygen");  
+    display.setCursor(30, 10);
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    display.print((readDO(u16ADC_Voltage, (uint8_t)floatTemperature))/1000);
+    display.setTextSize(1);
+    display.print(" mg/L");
+    display.display();
+}
+
+void oledPrintTemperature(float floatTemperature) {
+    char charTemperature[5]; 
+    dtostrf((double)floatTemperature, 5, 2, charTemperature);
+
+    display.setCursor(10, 30);
+    display.setTextSize(1);
+    display.setTextColor(2);
+    display.print("Current Temperature");
+    display.setCursor(30, 40);
+    display.setTextSize(2);
+    display.setTextColor(WHITE);
+    display.print(charTemperature);
+    display.setTextSize(1);
+    display.print(" ");
+    display.print((char)247); //DEGREE SYMBOL
+    display.print("C");
+    display.display();
+}
+
 //setup system and bus communication
 void setup()
 {
@@ -90,23 +126,15 @@ void loop()
   floatTemperature = floatPrecision(sensors.getTempCByIndex(0), (float)2.0) ;
   u16ADC_Raw = analogRead(DO_PIN);
   u16ADC_Voltage = uint32_t(VREF) * u16ADC_Raw / ADC_RES;
-  Serial.print("Temperature:\t" + String(floatTemperature) + "\t");
+  Serial.print("Temperature:\t" + String(floatTemperature, (unsigned char)2) + "\t");
   Serial.print("ADC RAW:\t" + String(u16ADC_Raw) + "\t");
   Serial.print("ADC Voltage:\t" + String(u16ADC_Voltage) + "\t");
-  Serial.println("DO:\t" + String((float)(readDO(u16ADC_Voltage, floatTemperature)/(uint16_t)1000)) + "\t");
+  Serial.println("DO:\t" + String((float)(readDO(u16ADC_Voltage, floatTemperature)/(uint16_t)1000), (unsigned char)2) + "\t");
  
-  display.clearDisplay();
-  display.setCursor(10, 0); //oled display
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.print("Dissolved Oxygen");
-  
-  display.setCursor(30, 20); //oled display
-  display.setTextSize(2);
-  display.setTextColor(WHITE);
-  display.print((readDO(u16ADC_Voltage, (uint8_t)floatTemperature))/1000);
-  display.setTextSize(1);
-  display.print(" mg/L");
-  display.display();
+  //oled
+  oledPrintOxigen(u16ADC_Voltage, floatTemperature);
+  oledPrintTemperature(floatTemperature);
+
+  //delay
   delay(1000);
 }

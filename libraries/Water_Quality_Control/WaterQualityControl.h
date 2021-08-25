@@ -30,7 +30,7 @@
 #define CAL2_T (15)   //℃
 
 //TEMPERATURE SENSOR
-#define ONE_WIRE_BUS 5
+#define ONE_WIRE_BUS 2
 
 //***************************************************************
 //                     FUNCTION PROTOTYPES

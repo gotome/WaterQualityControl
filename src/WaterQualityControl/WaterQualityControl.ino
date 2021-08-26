@@ -109,10 +109,10 @@ void setup()
   //temperature sensor
   sensors.begin();
   //pin mode setup 
-  pinMode(8, LOW);
-  pinMode(9, LOW);
-  pinMode(10, LOW);
-  pinMode(11, LOW);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
   //delay time
   delay(10);
 }
@@ -135,6 +135,14 @@ void loop()
   oledPrintOxigen(u16ADC_Voltage, floatTemperature);
   oledPrintTemperature(floatTemperature);
 
+  if (floatTemperature > (float)23) {
+    digitalWrite(8, LOW);
+  } 
+  else 
+  {    
+    digitalWrite(8, HIGH);
+  }
+
   //delay
-  delay(1000);
+  delay(100);
 }

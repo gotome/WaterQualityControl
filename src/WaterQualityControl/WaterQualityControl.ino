@@ -84,7 +84,7 @@ void oledPrintOxigen(uint16_t u16ADC_Voltage, float floatTemperature) {
 
 void oledPrintTemperature(float floatTemperature) {
     char charTemperature[4]; 
-    dtostrf((double)floatTemperature, 4, 2, charTemperature);
+    dtostrf((double)floatTemperature, 4, 1, charTemperature);
 
     display.setCursor(10, 30);
     display.setTextSize(1);

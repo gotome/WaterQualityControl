@@ -152,14 +152,14 @@ void loop()
   u16ADC_Voltage = uint32_t(VREF) * u16ADC_Raw / ADC_RES;
   //write locals
   double dTemperature = doublePrecision((double)sensors.getTempCByIndex(0), (double)2.0);
-  double dDO = readDO(u16ADC_Voltage, dTemperature); 
+  double dDO = doublePrecision(readDO(u16ADC_Voltage, dTemperature), (double)2.0);
 
   //serial monitor output
   Serial.print("Temperature:\t" + String(dTemperature, (unsigned char)2) + "\t");
   Serial.print("ADC RAW:\t" + String(u16ADC_Raw) + "\t");
   Serial.print("ADC Voltage:\t" + String(u16ADC_Voltage) + "\t");
   Serial.println("DO:\t" + String(dDO, (unsigned char)2) + "\t");
- 
+
   //oled part
   oledShowStats(dDO, dTemperature);
   //water quality control

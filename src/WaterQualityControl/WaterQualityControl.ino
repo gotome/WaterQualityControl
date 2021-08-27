@@ -72,11 +72,10 @@ void oledShowStats(void) {
 void oledPrintOxigen(uint16_t u16ADC_Voltage, float floatTemperature) {
     display.setCursor(10, 0);
     display.setTextSize(1);
-    display.setTextColor(WHITE, BLACK);
+    display.setTextColor(WHITE);
     display.print("Dissolved Oxygen");  
     display.setCursor(30, 10);
     display.setTextSize(2);
-    display.setTextColor(WHITE);
     display.print((readDO(u16ADC_Voltage, (uint8_t)floatTemperature))/1000);
     display.setTextSize(1);
     display.print(" mg/L");
@@ -88,7 +87,7 @@ void oledPrintTemperature(float floatTemperature) {
 
     display.setCursor(10, 30);
     display.setTextSize(1);
-    display.setTextColor(WHITE, BLACK);
+    display.setTextColor(WHITE);
     display.print("Current Temperature");
     display.setCursor(30, 40);
     display.setTextSize(2);
@@ -97,6 +96,16 @@ void oledPrintTemperature(float floatTemperature) {
     display.print(" ");
     display.print((char)247); //DEGREE SYMBOL
     display.print("C");
+}
+
+void switchOnRelay(uint8_t pin) {
+  //low voltage switching relay!
+  digitalWrite(pin, LOW); 
+}
+
+void switchOffRelay(uint8_t pin) {
+  //low voltage switching relay!
+  digitalWrite(pin, HIGH); 
 }
 
 //setup system and bus communication
@@ -138,11 +147,11 @@ void loop()
   oledShowStats();
 
   if (floatTemperature > (float)23) {
-    digitalWrite(8, LOW);
+    switchOnRelay(8);
   } 
   else 
   {    
-    digitalWrite(8, HIGH);
+    switchOffRelay(8);
   }
 
   //delay

@@ -11,14 +11,6 @@
 #define SCREEN_HEIGHT 64    // OLED display height, in pixels
 #define OLED_RESET -1       // Reset pin # (or -1 if sharing Arduino reset pin)
 #define DO_PIN A1
-
-// Color definitions
-#define BLUE            0x001F
-#define RED             0xF800
-#define GREEN           0x07E0
-#define CYAN            0x07FF
-#define MAGENTA         0xF81F
-#define YELLOW          0xFFE0  
  
 // OXIGEN SENSOR
 #define VREF 5000    //VREF (mv)
@@ -43,8 +35,9 @@
 //***************************************************************
 //                     FUNCTION PROTOTYPES
 //***************************************************************
-int16_t readDO(uint32_t voltage_mv, uint8_t temperature_c); 
-float floatPrecision(float n, float i);
-void oledShowStats(void);
+double readDO(uint32_t voltage_mv, uint8_t temperature_c); 
+void qualityControl(double dTemperature, double dDO);
+double doublePrecision(double n, double i);
+void oledShowStats(double dDO, double dTemperature);
 void switchOnRelay(uint8_t pin);
-void switchOffRelay(uint8_t pin)
+void switchOffRelay(uint8_t pin);

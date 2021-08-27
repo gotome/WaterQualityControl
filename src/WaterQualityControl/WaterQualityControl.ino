@@ -62,11 +62,17 @@ float floatPrecision(float n, float i)
     return floor(pow(10,i)*n)/pow(10,i);
 }
 
-void oledPrintOxigen(uint16_t u16ADC_Voltage, float floatTemperature) {
+void oledShowStats(void) {
     display.clearDisplay();
+    oledPrintOxigen(u16ADC_Voltage, floatTemperature);
+    oledPrintTemperature(floatTemperature);
+    display.display();
+}
+
+void oledPrintOxigen(uint16_t u16ADC_Voltage, float floatTemperature) {
     display.setCursor(10, 0);
     display.setTextSize(1);
-    display.setTextColor(WHITE);
+    display.setTextColor(WHITE, BLACK);
     display.print("Dissolved Oxygen");  
     display.setCursor(30, 10);
     display.setTextSize(2);
@@ -74,26 +80,23 @@ void oledPrintOxigen(uint16_t u16ADC_Voltage, float floatTemperature) {
     display.print((readDO(u16ADC_Voltage, (uint8_t)floatTemperature))/1000);
     display.setTextSize(1);
     display.print(" mg/L");
-    display.display();
 }
 
 void oledPrintTemperature(float floatTemperature) {
-    char charTemperature[5]; 
-    dtostrf((double)floatTemperature, 5, 2, charTemperature);
+    char charTemperature[4]; 
+    dtostrf((double)floatTemperature, 4, 2, charTemperature);
 
     display.setCursor(10, 30);
     display.setTextSize(1);
-    display.setTextColor(2);
+    display.setTextColor(WHITE, BLACK);
     display.print("Current Temperature");
     display.setCursor(30, 40);
     display.setTextSize(2);
-    display.setTextColor(WHITE);
     display.print(charTemperature);
     display.setTextSize(1);
     display.print(" ");
     display.print((char)247); //DEGREE SYMBOL
     display.print("C");
-    display.display();
 }
 
 //setup system and bus communication
@@ -131,9 +134,8 @@ void loop()
   Serial.print("ADC Voltage:\t" + String(u16ADC_Voltage) + "\t");
   Serial.println("DO:\t" + String((float)(readDO(u16ADC_Voltage, floatTemperature)/(uint16_t)1000), (unsigned char)2) + "\t");
  
-  //oled
-  oledPrintOxigen(u16ADC_Voltage, floatTemperature);
-  oledPrintTemperature(floatTemperature);
+  //oled part
+  oledShowStats();
 
   if (floatTemperature > (float)23) {
     digitalWrite(8, LOW);
@@ -144,5 +146,5 @@ void loop()
   }
 
   //delay
-  delay(100);
+  delay(1000);
 }

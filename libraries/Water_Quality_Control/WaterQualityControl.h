@@ -37,3 +37,4 @@
 //***************************************************************
 int16_t readDO(uint32_t voltage_mv, uint8_t temperature_c); 
 float floatPrecision(float n, float i);
+void oledShowStats(void);

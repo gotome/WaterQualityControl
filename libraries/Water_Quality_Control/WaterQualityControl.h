@@ -35,5 +35,9 @@
 //***************************************************************
 //                     FUNCTION PROTOTYPES
 //***************************************************************
-int16_t readDO(uint32_t voltage_mv, uint8_t temperature_c); 
-float floatPrecision(float n, float i);
+double readDO(uint32_t voltage_mv, uint8_t temperature_c); 
+void qualityControl(double dTemperature, double dDO);
+double doublePrecision(double n, double i);
+void oledShowStats(double dDO, double dTemperature);
+void switchOnRelay(uint8_t pin);
+void switchOffRelay(uint8_t pin);

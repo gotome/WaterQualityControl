@@ -21,17 +21,16 @@
 //****************************************
 //                TABLES
 //****************************************
-const uint16_t DO_Table[41] = {
-  14460, 14220, 13820, 13440, 13090, 12740, 12420, 12110, 11810, 11530,
-  11260, 11010, 10770, 10530, 10300, 10080, 9860, 9660, 9460, 9270,
-  9080, 8900, 8730, 8570, 8410, 8250, 8110, 7960, 7820, 7690,
-  7560, 7430, 7300, 7180, 7070, 6950, 6840, 6730, 6630, 6530, 6410
+const double DO_Table[41] = {
+  14.460, 14.220, 13.820, 13.440, 13.090, 12.740, 12.420, 12.110, 11.810, 11.530,
+  11.260, 11.010, 10.770, 10.530, 10.300, 10.080, 9.860, 9.660, 9.460, 9.270,
+  9.080, 8.900, 8.730, 8.570, 8.410, 8.250, 8.110, 7.960, 7.820, 7.690,
+  7.560, 7.430, 7.300, 7.180, 7.070, 6.950, 6.840, 6.730, 6.630, 6.530, 6.410
 };
 
 //****************************************
 //                GLOBALS
 //****************************************
-float floatTemperature;
 uint16_t u16ADC_Raw;
 uint16_t u16ADC_Voltage;
 uint16_t u16DO;
@@ -46,54 +45,79 @@ DallasTemperature sensors(&oneWire);
 //****************************************
 //         FUNCTION DEFINITIONS
 //****************************************
-int16_t readDO(uint32_t voltage_mv, uint8_t temperature_c)
+double readDO(uint32_t voltage_mv, uint8_t temperature_c)
 {
 #if TWO_POINT_CALIBRATION == 00
   uint16_t V_saturation = (uint32_t)CAL1_V + (uint32_t)35 * temperature_c - (uint32_t)CAL1_T * 35;
-  return (voltage_mv * DO_Table[temperature_c] / V_saturation);
+  return (double)(voltage_mv * DO_Table[temperature_c] / V_saturation);
 #else
   uint16_t V_saturation = (int16_t)((int8_t)temperature_c - CAL2_T) * ((uint16_t)CAL1_V - CAL2_V) / ((uint8_t)CAL1_T - CAL2_T) + CAL2_V;
-  return (voltage_mv * DO_Table[temperature_c] / V_saturation);
+  return (double)(voltage_mv * DO_Table[temperature_c] / V_saturation);
 #endif
 }
 
-float floatPrecision(float n, float i)
+double doublePrecision(double n, double i)
 {
     return floor(pow(10,i)*n)/pow(10,i);
 }
 
-void oledPrintOxigen(uint16_t u16ADC_Voltage, float floatTemperature) {
+void oledShowStats(double dDO, double dTemperature) {
     display.clearDisplay();
+    oledPrintOxigen(dDO);
+    oledPrintTemperature(dTemperature);
+    display.display();
+}
+
+void oledPrintOxigen(double dDO) {  
+    char charDO[5]; 
+    dtostrf(dDO, 4, 1, charDO);
+
     display.setCursor(10, 0);
     display.setTextSize(1);
     display.setTextColor(WHITE);
     display.print("Dissolved Oxygen");  
     display.setCursor(30, 10);
     display.setTextSize(2);
-    display.setTextColor(WHITE);
-    display.print((readDO(u16ADC_Voltage, (uint8_t)floatTemperature))/1000);
+    display.print(charDO);
     display.setTextSize(1);
     display.print(" mg/L");
-    display.display();
 }
 
-void oledPrintTemperature(float floatTemperature) {
+void oledPrintTemperature(double dTemperature) {
     char charTemperature[5]; 
-    dtostrf((double)floatTemperature, 5, 2, charTemperature);
+    dtostrf(dTemperature, 4, 1, charTemperature);
 
     display.setCursor(10, 30);
     display.setTextSize(1);
-    display.setTextColor(2);
+    display.setTextColor(WHITE);
     display.print("Current Temperature");
     display.setCursor(30, 40);
     display.setTextSize(2);
-    display.setTextColor(WHITE);
     display.print(charTemperature);
     display.setTextSize(1);
     display.print(" ");
     display.print((char)247); //DEGREE SYMBOL
     display.print("C");
-    display.display();
+}
+
+void switchOnRelay(uint8_t pin) {
+  //low voltage switching relay!
+  digitalWrite(pin, LOW); 
+}
+
+void switchOffRelay(uint8_t pin) {
+  //low voltage switching relay!
+  digitalWrite(pin, HIGH); 
+}
+
+void qualityControl(double dTemperature, double dDO) {
+    if (dDO < (double)5) {
+    switchOnRelay(8);
+  } 
+  else 
+  {    
+    switchOffRelay(8);
+  }
 }
 
 //setup system and bus communication
@@ -122,27 +146,25 @@ void setup()
 //****************************************
 void loop()
 {
+  //write globals
   sensors.requestTemperatures(); //(uint8_t)READ_TEMP;
-  floatTemperature = floatPrecision(sensors.getTempCByIndex(0), (float)2.0) ;
   u16ADC_Raw = analogRead(DO_PIN);
   u16ADC_Voltage = uint32_t(VREF) * u16ADC_Raw / ADC_RES;
-  Serial.print("Temperature:\t" + String(floatTemperature, (unsigned char)2) + "\t");
+  //write locals
+  double dTemperature = doublePrecision((double)sensors.getTempCByIndex(0), (double)2.0);
+  double dDO = doublePrecision(readDO(u16ADC_Voltage, dTemperature), (double)2.0);
+
+  //serial monitor output
+  Serial.print("Temperature:\t" + String(dTemperature, (unsigned char)2) + "\t");
   Serial.print("ADC RAW:\t" + String(u16ADC_Raw) + "\t");
   Serial.print("ADC Voltage:\t" + String(u16ADC_Voltage) + "\t");
-  Serial.println("DO:\t" + String((float)(readDO(u16ADC_Voltage, floatTemperature)/(uint16_t)1000), (unsigned char)2) + "\t");
- 
-  //oled
-  oledPrintOxigen(u16ADC_Voltage, floatTemperature);
-  oledPrintTemperature(floatTemperature);
+  Serial.println("DO:\t" + String(dDO, (unsigned char)2) + "\t");
 
-  if (floatTemperature > (float)23) {
-    digitalWrite(8, LOW);
-  } 
-  else 
-  {    
-    digitalWrite(8, HIGH);
-  }
+  //oled part
+  oledShowStats(dDO, dTemperature);
+  //water quality control
+  qualityControl(dTemperature, dDO); 
 
   //delay
-  delay(100);
+  delay(1000);
 }

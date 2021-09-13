@@ -111,7 +111,7 @@ void switchOffRelay(uint8_t pin) {
 }
 
 void qualityControl(double dTemperature, double dDO) {
-    if (dTemperature > (double)23) {
+    if (dDO < (double)5) {
     switchOnRelay(8);
   } 
   else 

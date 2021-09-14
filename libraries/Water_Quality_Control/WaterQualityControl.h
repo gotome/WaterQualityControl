@@ -10,10 +10,16 @@
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
 #define SCREEN_HEIGHT 64    // OLED display height, in pixels
 #define OLED_RESET -1       // Reset pin # (or -1 if sharing Arduino reset pin)
-#define DO_PIN A1
+#define SUB_MENUE_1 (int)0       // value for oled sub menue 1
+#define SUB_MENUE_2 (int)1       // value for oled sub menue 2
+
+//ANALOG PINS
+#define DO_PIN_A0 A0
+#define DO_PIN_A1 A1
  
-// OXIGEN SENSOR
+// General Constant for analog input
 #define VREF 5000    //VREF (mv)
+#define VREF_2 5      //VREF (V)
 #define ADC_RES 1024 //ADC Resolution
  
 //Single-point calibration Mode=0
@@ -38,6 +44,8 @@
 double readDO(uint32_t voltage_mv, uint8_t temperature_c); 
 void qualityControl(double dTemperature, double dDO);
 double doublePrecision(double n, double i);
-void oledShowStats(double dDO, double dTemperature);
+void oledShowStats(double dDO, double dTemperature, double dBatVoltage);
 void switchOnRelay(uint8_t pin);
 void switchOffRelay(uint8_t pin);
+void oledPrintBatteryVoltage(double batVoltage);
+void oledSwitchMenue();

@@ -31,9 +31,13 @@ const double DO_Table[41] = {
 //****************************************
 //                GLOBALS
 //****************************************
-uint16_t u16ADC_Raw;
-uint16_t u16ADC_Voltage;
+uint16_t u16ADC_Raw; //raw value oxygen sensor
+uint16_t u16ADC_Voltage; //voltage oxygen sensor
+uint16_t u16ADC_RawBat; //raw value battery
+uint16_t u16ADC_VoltageBat; //voltage battery
 uint16_t u16DO;
+int intCurrSubMenueVal = SUB_MENUE_1;
+int intOldSubMenueVal = SUB_MENUE_1;
 
 //****************************************
 //         FUNCTION DECLARATIONS
@@ -61,16 +65,54 @@ double doublePrecision(double n, double i)
     return floor(pow(10,i)*n)/pow(10,i);
 }
 
-void oledShowStats(double dDO, double dTemperature) {
+void oledShowStats(double dDO, double dTemperature, double dBatVoltage) {    
     display.clearDisplay();
-    oledPrintOxigen(dDO);
-    oledPrintTemperature(dTemperature);
+    switch (intCurrSubMenueVal)
+    {
+    case SUB_MENUE_1:
+      oledPrintOxigen(dDO);
+      oledPrintTemperature(dTemperature);
+      break;    
+    case SUB_MENUE_2:
+      oledPrintBatteryVoltage(dBatVoltage);
+      break;    
+    default:
+      //nothing to do
+      break;
+    }
     display.display();
 }
 
+void oledPrintBatteryVoltage(double batVoltage) {  
+    char charVal[5]; 
+    dtostrf(batVoltage, 4, 2, charVal);
+
+    display.setCursor(10, 0);
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.print("Battery Voltage");  
+    display.setCursor(30, 10);
+    display.setTextSize(2);
+    display.print(charVal);
+    display.setTextSize(1);
+    display.print(" V");
+}
+
+void oledSwitchMenue() {
+  int bMenueBtn = digitalRead(PIN7);
+  if (bMenueBtn == HIGH) {    
+    if (intCurrSubMenueVal == intOldSubMenueVal) {
+      intCurrSubMenueVal = (intCurrSubMenueVal == SUB_MENUE_1) ? SUB_MENUE_2 : SUB_MENUE_1;
+    }
+  } 
+  else {
+    intOldSubMenueVal = intCurrSubMenueVal;
+  }
+}
+
 void oledPrintOxigen(double dDO) {  
-    char charDO[5]; 
-    dtostrf(dDO, 4, 1, charDO);
+    char charVal[5]; 
+    dtostrf(dDO, 4, 1, charVal);
 
     display.setCursor(10, 0);
     display.setTextSize(1);
@@ -78,14 +120,14 @@ void oledPrintOxigen(double dDO) {
     display.print("Dissolved Oxygen");  
     display.setCursor(30, 10);
     display.setTextSize(2);
-    display.print(charDO);
+    display.print(charVal);
     display.setTextSize(1);
     display.print(" mg/L");
 }
 
 void oledPrintTemperature(double dTemperature) {
-    char charTemperature[5]; 
-    dtostrf(dTemperature, 4, 1, charTemperature);
+    char charVal[5]; 
+    dtostrf(dTemperature, 4, 1, charVal);
 
     display.setCursor(10, 30);
     display.setTextSize(1);
@@ -93,7 +135,7 @@ void oledPrintTemperature(double dTemperature) {
     display.print("Current Temperature");
     display.setCursor(30, 40);
     display.setTextSize(2);
-    display.print(charTemperature);
+    display.print(charVal);
     display.setTextSize(1);
     display.print(" ");
     display.print((char)247); //DEGREE SYMBOL
@@ -137,6 +179,7 @@ void setup()
   pinMode(9, OUTPUT);
   pinMode(10, OUTPUT);
   pinMode(11, OUTPUT);
+  pinMode(PIN7, INPUT);
   //delay time
   delay(10);
 }
@@ -148,23 +191,27 @@ void loop()
 {
   //write globals
   sensors.requestTemperatures(); //(uint8_t)READ_TEMP;
-  u16ADC_Raw = analogRead(DO_PIN);
+  u16ADC_Raw = analogRead(DO_PIN_A1);
   u16ADC_Voltage = uint32_t(VREF) * u16ADC_Raw / ADC_RES;
+  u16ADC_RawBat = analogRead(DO_PIN_A0);
+  u16ADC_VoltageBat = uint32_t(VREF) * u16ADC_RawBat / ADC_RES;
   //write locals
   double dTemperature = doublePrecision((double)sensors.getTempCByIndex(0), (double)2.0);
   double dDO = doublePrecision(readDO(u16ADC_Voltage, dTemperature), (double)2.0);
+  double dBatVoltage = doublePrecision((double)(((double)16/(double)5) * u16ADC_VoltageBat / (double)1000.0), (double)2.0);
 
   //serial monitor output
-  Serial.print("Temperature:\t" + String(dTemperature, (unsigned char)2) + "\t");
-  Serial.print("ADC RAW:\t" + String(u16ADC_Raw) + "\t");
-  Serial.print("ADC Voltage:\t" + String(u16ADC_Voltage) + "\t");
-  Serial.println("DO:\t" + String(dDO, (unsigned char)2) + "\t");
+  // Serial.print("Temperature:\t" + String(dTemperature, (unsigned char)2) + "\t");
+  // Serial.print("ADC RAW:\t" + String(u16ADC_Raw) + "\t");
+  // Serial.print("ADC Voltage:\t" + String(u16ADC_Voltage) + "\t");
+  // Serial.println("DO:\t" + String(dDO, (unsigned char)2) + "\t");
 
-  //oled part
-  oledShowStats(dDO, dTemperature);
+  //oled part  
+  oledSwitchMenue();
+  oledShowStats(dDO, dTemperature, dBatVoltage);
   //water quality control
   qualityControl(dTemperature, dDO); 
 
   //delay
-  delay(1000);
+  delay(100);
 }

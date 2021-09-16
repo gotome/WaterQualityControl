@@ -198,7 +198,7 @@ void loop()
   //write locals
   double dTemperature = doublePrecision((double)sensors.getTempCByIndex(0), (double)2.0);
   double dDO = doublePrecision(readDO(u16ADC_Voltage, dTemperature), (double)2.0);
-  double dBatVoltage = doublePrecision((double)(((double)34.5/(double)5) * u16ADC_VoltageBat / (double)1000.0), (double)2.0);
+  double dBatVoltage = doublePrecision((double)(((double)16/(double)5) * u16ADC_VoltageBat / (double)1000.0), (double)2.0);
 
   //serial monitor output
   // Serial.print("Temperature:\t" + String(dTemperature, (unsigned char)2) + "\t");

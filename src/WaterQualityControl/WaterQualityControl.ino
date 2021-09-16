@@ -213,5 +213,5 @@ void loop()
   qualityControl(dTemperature, dDO); 
 
   //delay
-  delay(100);
+  delay(10);
 }

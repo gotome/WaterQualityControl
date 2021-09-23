@@ -16,7 +16,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 //project
-#include <WaterQualityControl.h>
+#include "WaterQualityControl.h"
  
 //****************************************
 //                TABLES

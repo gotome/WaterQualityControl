@@ -36,8 +36,8 @@ uint16_t u16ADC_Voltage; //voltage oxygen sensor
 uint16_t u16ADC_RawBat; //raw value battery
 uint16_t u16ADC_VoltageBat; //voltage battery
 uint16_t u16DO;
-int intCurrSubMenueVal = SUB_MENUE_1;
-int intOldSubMenueVal = SUB_MENUE_1;
+int i16CurrSubMenueVal = SUB_MENUE_1;
+int i16OldSubMenueVal = SUB_MENUE_1;
 
 //****************************************
 //         FUNCTION DECLARATIONS
@@ -67,7 +67,7 @@ double doublePrecision(double n, double i)
 
 void oledShowStats(double dDO, double dTemperature, double dBatVoltage) {    
     display.clearDisplay();
-    switch (intCurrSubMenueVal)
+    switch (i16CurrSubMenueVal)
     {
     case SUB_MENUE_1:
       oledPrintOxigen(dDO);
@@ -101,12 +101,12 @@ void oledPrintBatteryVoltage(double batVoltage) {
 void oledSwitchMenue() {
   int bMenueBtn = digitalRead(PIN7);
   if (bMenueBtn == HIGH) {    
-    if (intCurrSubMenueVal == intOldSubMenueVal) {
-      intCurrSubMenueVal = (intCurrSubMenueVal == SUB_MENUE_1) ? SUB_MENUE_2 : SUB_MENUE_1;
+    if (i16CurrSubMenueVal == i16OldSubMenueVal) {
+      i16CurrSubMenueVal = (i16CurrSubMenueVal == SUB_MENUE_1) ? SUB_MENUE_2 : SUB_MENUE_1;
     }
   } 
   else {
-    intOldSubMenueVal = intCurrSubMenueVal;
+    i16OldSubMenueVal = i16CurrSubMenueVal;
   }
 }
 
